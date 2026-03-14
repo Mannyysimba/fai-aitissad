@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAI · Fondation Aït Issad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&family=Noto+Sans+Arabic:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blanc: #faf7f2;
+    --creme: #f0e6d3;
+    --sable: #b5622a;
+    --ocre: #8a3e12;
+    --terre: #5c2a0a;
+    --gris: #4e4239;
+    --gris-light: #e8ddd2;
+    --noir-texte: #1a1208;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--blanc);
+    color: var(--noir-texte);
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    overflow-x: hidden;
+  }
+
+  /* ─── CONTAINER ─── */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5rem;
+    width: 100%;
+  }
+
+  /* ─── LOADER ─── */
+  #loader {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #faf7f2;
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.75s ease, visibility 0.75s ease;
+  }
+  #loader.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+  .loader-inner { text-align: center; }
+  .loader-tifinagh {
+    font-size: 2.8rem;
+    color: rgba(181,98,42,0.22);
+    display: block;
+    margin-bottom: 1.6rem;
+    animation: loaderPulse 2s ease-in-out infinite;
+  }
+  .loader-brand {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.5rem;
+    letter-spacing: 0.75em;
+    text-indent: 0.75em;
+    color: #b5622a;
+    text-transform: uppercase;
+    animation: loaderFade 0.7s 0.15s both;
+  }
+  .loader-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem;
+    font-style: italic;
+    letter-spacing: 0.28em;
+    text-indent: 0.28em;
+    color: rgba(181,98,42,0.65);
+    margin-top: 0.55rem;
+    animation: loaderFade 0.7s 0.45s both;
+  }
+  .loader-line {
+    width: 0; height: 1px;
+    background: rgba(181,98,42,0.35);
+    margin: 1.8rem auto 0;
+    animation: loaderGrow 1s 0.7s ease-out forwards;
+  }
+  @keyframes loaderPulse {
+    0%, 100% { opacity: 0.12; transform: rotate(0deg) scale(1); }
+    50% { opacity: 0.4; transform: rotate(180deg) scale(1.06); }
+  }
+  @keyframes loaderFade {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes loaderGrow {
+    from { width: 0; }
+    to { width: 64px; }
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(250,247,242,0.95);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(181,98,42,0.15);
+  }
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.2rem 5rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .nav-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    color: var(--sable);
+    text-transform: uppercase;
+  }
+  .nav-right {
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .nav-langs {
+    display: flex; gap: 1.2rem;
+  }
+  .nav-langs button {
+    background: none; border: none; cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    color: rgba(181,98,42,0.55);
+    text-transform: uppercase;
+    transition: color 0.3s;
+    padding: 0.2rem 0.4rem;
+  }
+  .nav-langs button.active,
+  .nav-langs button:hover { color: var(--sable); }
+  .nav-langs button.active { border-bottom: 1px solid var(--sable); }
+
+  .theme-toggle {
+    background: none; border: 1px solid rgba(181,98,42,0.3);
+    cursor: pointer; padding: 0.3rem 0.7rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.2em;
+    color: rgba(181,98,42,0.7); text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  .theme-toggle:hover { border-color: var(--sable); color: var(--sable); }
+
+  .nav-pdf {
+    display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(181,98,42,0.3);
+    color: rgba(181,98,42,0.65);
+    text-decoration: none;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .nav-pdf:hover { border-color: var(--sable); color: var(--sable); }
+
+  /* ─── DARK MODE ─── */
+  body.dark {
+    --blanc: #0a0804;
+    --creme: #f0e6d3;
+    --sable: #c9a96e;
+    --ocre: #b5622a;
+    --terre: #3a1a05;
+    --gris: #9a8878;
+    --gris-light: #1a1208;
+    --noir-texte: #f0e6d3;
+  }
+  body.dark #loader { background: #0a0804; }
+  body.dark .loader-tifinagh { color: rgba(201,169,110,0.22); }
+  body.dark .loader-brand { color: #c9a96e; }
+  body.dark .loader-name { color: rgba(201,169,110,0.6); }
+  body.dark .loader-line { background: rgba(201,169,110,0.3); }
+  body.dark nav { background: rgba(10,8,4,0.92); border-bottom-color: rgba(201,169,110,0.15); }
+  body.dark .hero { background: #0a0804; }
+  body.dark .hero-overlay { background: linear-gradient(to bottom, rgba(10,8,4,0.35) 0%, rgba(10,8,4,0.82) 65%, #0a0804 100%); }
+  body.dark .origine { background: #0a0804; }
+  body.dark .origine-img { border-color: rgba(201,169,110,0.1); }
+  body.dark .vision { background: #0d0905; }
+  body.dark .piliers { background: rgba(255,255,255,0.015); }
+  body.dark .pilier-card { background: #0a0804; border-color: rgba(201,169,110,0.12); }
+  body.dark .pilier-card:hover { background: rgba(201,169,110,0.04); }
+  body.dark .pilier-list li { color: rgba(240,230,211,0.65); }
+  body.dark .archi-strip { background: #0d0905; border-color: rgba(201,169,110,0.06); }
+  body.dark .archi-strip img { filter: invert(0.88) sepia(0.35) hue-rotate(340deg); opacity: 0.7; }
+  body.dark .impact-text { background: #0a0804; border-color: rgba(201,169,110,0.08); }
+  body.dark .rejoindre { background: #0a0804; }
+  body.dark footer { background: #0a0804; border-color: rgba(201,169,110,0.08); }
+  body.dark .cta-primary { background: transparent; color: var(--sable); }
+  body.dark .cta-primary:hover { background: var(--sable); color: #0a0804; }
+  body.dark .theme-toggle { border-color: rgba(201,169,110,0.3); color: rgba(201,169,110,0.7); }
+  body.dark .nav-pdf { border-color: rgba(201,169,110,0.3); color: rgba(201,169,110,0.65); }
+  body.dark .nav-pdf:hover { border-color: var(--sable); color: var(--sable); }
+  body.dark .cta-pdf-icon { border-color: rgba(201,169,110,0.3); color: rgba(201,169,110,0.65); }
+  body.dark .cta-pdf-icon:hover { border-color: var(--sable); color: var(--sable); }
+  body.dark p.body-text { color: rgba(240,230,211,0.75); }
+  body.dark p.lead { color: rgba(240,230,211,0.7); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    position: relative;
+    overflow: hidden;
+    background: var(--creme);
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('images/hero.jpg');
+    background-size: cover;
+    background-position: center 35%;
+  }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(250,247,242,0.1) 0%, rgba(240,230,211,0.6) 55%, var(--creme) 100%);
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 6rem 5rem 5rem;
+  }
+  .hero-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.4em;
+    color: var(--sable);
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 1s 0.3s forwards;
+  }
+  .hero-title {
+    font-size: clamp(2.8rem, 7vw, 6.5rem);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--noir-texte);
+    max-width: 900px;
+    opacity: 0;
+    animation: fadeUp 1s 0.6s forwards;
+  }
+  .hero-title em { font-style: italic; color: var(--sable); }
+  .hero-subtitle {
+    margin-top: 2rem;
+    font-size: 1.25rem;
+    font-weight: 300;
+    color: var(--gris);
+    max-width: 600px;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 1s 0.9s forwards;
+  }
+  .hero-line {
+    position: absolute; bottom: 0; left: 5rem;
+    width: 1px; height: 80px;
+    background: linear-gradient(to bottom, var(--sable), transparent);
+    opacity: 0;
+    animation: fadeIn 1.5s 1.2s forwards;
+  }
+  .scroll-hint {
+    position: absolute; bottom: 2rem; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: rgba(181,98,42,0.6);
+    text-transform: uppercase;
+    animation: pulse 3s infinite;
+  }
+
+  /* ─── SECTIONS ─── */
+  section { padding: 8rem 0; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.45em;
+    color: var(--sable);
+    text-transform: uppercase;
+    margin-bottom: 3rem;
+    display: flex; align-items: center; gap: 1rem;
+    font-weight: 700;
+  }
+  .section-label::after {
+    content: '';
+    display: block; height: 1px; width: 60px;
+    background: var(--sable); opacity: 0.4;
+  }
+
+  h2 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 300;
+    line-height: 1.15;
+    color: var(--noir-texte);
+    margin-bottom: 2.5rem;
+  }
+  h2 em { font-style: italic; color: var(--sable); }
+
+  p.lead {
+    font-size: 1.35rem;
+    font-weight: 300;
+    line-height: 1.75;
+    color: var(--gris);
+    max-width: 680px;
+  }
+  p.body-text {
+    font-size: 1.1rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--gris);
+    max-width: 640px;
+    margin-top: 1.5rem;
+  }
+
+  /* ─── ORIGINE ─── */
+  .origine { background: var(--blanc); }
+  .origine-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+  .origine-img {
+    aspect-ratio: 3/4;
+    background-image: url('images/village-oil.png');
+    background-size: cover;
+    background-position: center center;
+    border: 1px solid rgba(181,98,42,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+  .img-caption {
+    position: absolute; bottom: 1.5rem; left: 1.5rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.85);
+    text-transform: uppercase;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  }
+
+  /* ─── VISION ─── */
+  .vision {
+    background: var(--noir-texte);
+    color: var(--creme);
+    position: relative;
+    overflow: hidden;
+  }
+  .vision-bg {
+    position: absolute; inset: 0;
+    background-image: url('images/portrait.jpeg');
+    background-size: cover;
+    background-position: center top;
+    opacity: 0.06;
+  }
+  .vision > .container > * { position: relative; z-index: 1; }
+  .vision .section-label { color: rgba(201,169,110,0.9); }
+  .vision h2 { color: var(--creme); }
+  .vision-statement {
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 300;
+    font-style: italic;
+    color: #c9a96e;
+    line-height: 1.4;
+    max-width: 800px;
+    border-left: 2px solid #c9a96e;
+    padding-left: 2rem;
+    margin: 3rem 0 5rem;
+  }
+  .vision p.body-text { color: rgba(240,230,211,0.8); }
+
+  /* ─── PILIERS ─── */
+  .piliers { background: var(--creme); }
+  .piliers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 4rem;
+    border: 1px solid rgba(181,98,42,0.15);
+  }
+  .pilier-card {
+    padding: 3rem 2rem;
+    border-right: 1px solid rgba(181,98,42,0.12);
+    background: var(--blanc);
+    transition: background 0.4s;
+    cursor: default;
+  }
+  .pilier-card:last-child { border-right: none; }
+  .pilier-card:hover { background: var(--creme); }
+  .pilier-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: rgba(181,98,42,0.5);
+    margin-bottom: 2rem;
+  }
+  .pilier-icon { font-size: 1.8rem; margin-bottom: 1.2rem; display: block; }
+  .pilier-title {
+    font-size: 1.5rem;
+    font-weight: 400;
+    color: var(--noir-texte);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  .pilier-title em { font-style: italic; color: var(--sable); }
+  .pilier-list {
+    list-style: none;
+    font-size: 0.95rem;
+    color: var(--gris);
+    line-height: 1.9;
+    font-weight: 300;
+  }
+  .pilier-list li::before { content: '· '; color: rgba(181,98,42,0.5); }
+
+  /* ─── ARCHI STRIP ─── */
+  .archi-strip {
+    background: var(--blanc);
+    border-top: 1px solid rgba(181,98,42,0.08);
+    border-bottom: 1px solid rgba(181,98,42,0.08);
+    padding: 5rem 0;
+  }
+  .archi-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5rem;
+    display: flex;
+    align-items: center;
+    gap: 5rem;
+  }
+  .archi-strip img {
+    width: 280px;
+    flex-shrink: 0;
+    opacity: 0.82;
+    filter: sepia(12%);
+  }
+  .archi-text { max-width: 520px; }
+  .archi-text .section-label { margin-bottom: 1.5rem; }
+  .archi-text p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 300;
+    line-height: 1.85;
+    color: var(--gris);
+  }
+
+  /* ─── IMPACT ─── */
+  .impact {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    padding: 0;
+  }
+  .impact-text {
+    padding: 8rem 5rem 8rem 5rem;
+    background: var(--blanc);
+    border-right: 1px solid rgba(181,98,42,0.1);
+    max-width: 600px;
+    margin-left: auto;
+  }
+  .impact-visual {
+    position: relative;
+    min-height: 600px;
+    overflow: hidden;
+  }
+  .impact-visual img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 4rem;
+  }
+  .stat-item { border-top: 1px solid rgba(181,98,42,0.2); padding-top: 1.5rem; }
+  .stat-num {
+    font-size: 3.5rem;
+    font-weight: 300;
+    color: var(--sable);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.25em;
+    color: rgba(181,98,42,0.7);
+    text-transform: uppercase;
+    line-height: 1.6;
+  }
+
+  /* ─── REJOINDRE ─── */
+  .rejoindre {
+    text-align: center;
+    background: var(--creme);
+    padding: 10rem 0;
+    border-top: 1px solid rgba(181,98,42,0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .rejoindre-bg {
+    position: absolute; inset: 0;
+    background-image: url('images/community.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.07;
+  }
+  .rejoindre > .container > * { position: relative; z-index: 1; }
+  .rejoindre h2 { margin-inline: auto; max-width: 700px; }
+  .rejoindre p.lead { margin: 0 auto 4rem; text-align: center; max-width: 640px; }
+
+  .cta-group {
+    display: flex; gap: 1.5rem; justify-content: center;
+    flex-wrap: wrap; align-items: center;
+  }
+  .cta-primary {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    padding: 1rem 2.5rem;
+    border: 1px solid var(--sable);
+    background: var(--sable);
+    color: var(--blanc);
+    text-decoration: none;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    transition: all 0.3s;
+  }
+  .cta-primary:hover { background: var(--ocre); border-color: var(--ocre); }
+  .cta-primary .t.active { display: inline; }
+
+  .cta-pdf-icon {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 46px; height: 46px;
+    border: 1px solid rgba(181,98,42,0.35);
+    color: var(--sable);
+    text-decoration: none;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+  .cta-pdf-icon:hover { border-color: var(--sable); background: rgba(181,98,42,0.06); }
+
+  /* ─── DIVIDER ─── */
+  .divider {
+    margin: 4rem auto;
+    height: 1px;
+    max-width: 180px;
+    background: rgba(181,98,42,0.22);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid rgba(181,98,42,0.1);
+    background: var(--blanc);
+    padding: 3rem 0;
+  }
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5rem;
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 2rem;
+  }
+  .footer-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    color: rgba(181,98,42,0.6);
+    text-transform: uppercase;
+    line-height: 2;
+  }
+  .footer-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.2em;
+    color: rgba(181,98,42,0.55);
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 2.2;
+  }
+  .footer-meta a {
+    color: rgba(181,98,42,0.65);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-meta a:hover { color: var(--sable); }
+
+  /* ─── MULTILANG ─── */
+  [lang="ar"] { font-family: 'Noto Sans Arabic', sans-serif; direction: rtl; font-weight: 300; }
+  .t { display: none; }
+  .t.active { display: block; }
+
+  /* ─── REVEAL ─── */
+  .reveal {
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.35; } 50% { opacity: 0.75; }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1100px) {
+    .container { padding: 0 3rem; }
+    .nav-inner { padding: 1.2rem 3rem; }
+    .hero-content { padding: 6rem 3rem 5rem; }
+    .archi-inner { padding: 0 3rem; }
+    .footer-inner { padding: 0 3rem; }
+    .impact-text { padding: 8rem 3rem 8rem 3rem; }
+  }
+  @media (max-width: 900px) {
+    .container { padding: 0 2rem; }
+    .nav-inner { padding: 1rem 2rem; }
+    .hero-content { padding: 5rem 2rem 4rem; }
+    .archi-inner { padding: 0 2rem; flex-direction: column; gap: 2.5rem; }
+    .archi-strip img { width: 100%; max-width: 380px; }
+    section { padding: 5rem 0; }
+    .origine-grid { grid-template-columns: 1fr; gap: 3rem; }
+    .piliers-grid { grid-template-columns: 1fr 1fr; }
+    .impact { grid-template-columns: 1fr; }
+    .impact-text { padding: 5rem 2rem; border-right: none; max-width: none; margin-left: 0; }
+    .impact-visual { min-height: 400px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .footer-inner { flex-direction: column; align-items: flex-start; padding: 0 2rem; }
+    .footer-meta { text-align: left; }
+  }
+  @media (max-width: 600px) {
+    .container { padding: 0 1.5rem; }
+    .nav-inner { padding: 1rem 1.5rem; }
+    .hero-content { padding: 5rem 1.5rem 4rem; }
+    .piliers-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 2.4rem; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .nav-logo { display: none; }
+    .footer-inner { padding: 0 1.5rem; }
+  }
+</style>
+</head>
+<body>
+<script>
+  if (localStorage.getItem('fai-theme') === 'dark') {
+    document.body.classList.add('dark');
+  }
+</script>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-inner">
+    <span class="loader-tifinagh">ⵙ</span>
+    <div class="loader-brand">FAI</div>
+    <div class="loader-name">Fondation Aït Issad</div>
+    <div class="loader-line"></div>
+  </div>
+</div>
+
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">FAI — Fondation Aït Issad</div>
+    <div class="nav-right">
+      <div class="nav-langs">
+        <button class="active" onclick="setLang('fr')">FR</button>
+        <button onclick="setLang('ar')">ع</button>
+        <button onclick="setLang('tz')">ⵜⵣ</button>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" id="themeBtn">◑ DARK</button>
+      <a href="#" class="nav-pdf" title="Télécharger le projet (PDF)">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span class="t active" data-lang="fr">Association loi 1901 · Paris · Fondée pour Aït Issad</span>
+      <span class="t" data-lang="ar" lang="ar">جمعية قانون 1901 · باريس · مؤسسة لأيت إسعد</span>
+      <span class="t" data-lang="tz">Timetti n 1901 · Paris · Tuẓẓint i Ayt Issad</span>
+    </div>
+    <h1 class="hero-title">
+      <span class="t active" data-lang="fr">Le premier village<br>d'Afrique à <em>ne jamais<br>oublier les siens.</em></span>
+      <span class="t" data-lang="ar" lang="ar">أول قرية في أفريقيا<br>لا تنسى <em>أبناءها أبداً.</em></span>
+      <span class="t" data-lang="tz">Adɣar amezwaru<br>n Tefriqt <em>ur yettu ara<br>isinen.</em></span>
+    </h1>
+    <p class="hero-subtitle">
+      <span class="t active" data-lang="fr">Fondation Aït Issad, un projet humain pour bâtir, préserver et transmettre l'héritage d'un peuple ancré dans ses montagnes.</span>
+      <span class="t" data-lang="ar" lang="ar">مؤسسة أيت إسعد، مشروع إنساني لبناء وصون ونقل إرث شعب متجذر في جباله.</span>
+      <span class="t" data-lang="tz">FAI, amahil n umdan akken ad yebnu, ad yenṭeq, ad yefk timernas n yimdanen n Ayt Issad.</span>
+    </p>
+  </div>
+  <div class="hero-line"></div>
+  <div class="scroll-hint">↓ Découvrir</div>
+</section>
+
+<!-- ORIGINE -->
+<section class="origine">
+  <div class="container">
+    <div class="origine-grid reveal">
+      <div>
+        <div class="section-label">
+          <span class="t active" data-lang="fr">01 · L'Origine</span>
+          <span class="t" data-lang="ar" lang="ar">01 · الأصل</span>
+          <span class="t" data-lang="tz">01 · Asebded</span>
+        </div>
+        <h2>
+          <span class="t active" data-lang="fr">Un village.<br>Des familles éparpillées<br>à travers <em>le monde.</em></span>
+          <span class="t" data-lang="ar" lang="ar">قرية واحدة.<br>عائلات موزعة<br>في <em>أرجاء العالم.</em></span>
+          <span class="t" data-lang="tz">Adɣar yiwen.<br>Tifamilin ur nerri ara<br>deg <em>umaḍal.</em></span>
+        </h2>
+        <p class="lead">
+          <span class="t active" data-lang="fr">Aït Issad est un village kabyle niché dans les montagnes d'Algérie. Depuis des décennies, ses enfants partent, vers Paris, vers l'Europe, vers le monde.</span>
+          <span class="t" data-lang="ar" lang="ar">أيت إسعد قرية قبائلية محاطة بجبال الجزائر. منذ عقود، يغادر أبناؤها إلى باريس، أوروبا، والعالم.</span>
+          <span class="t" data-lang="tz">Ayt Issad d adɣar aqbayli yettɛeddan deg idurar n Lezzayer. Yal aseggwas, tarwa-s ttafgen.</span>
+        </p>
+        <p class="body-text">
+          <span class="t active" data-lang="fr">Mais partir n'a jamais voulu dire oublier. La Fondation Aït Issad naît de cette fidélité, un lien entre ceux qui sont restés et ceux qui sont loin.</span>
+          <span class="t" data-lang="ar" lang="ar">لكن الرحيل لم يعنِ النسيان. تولد مؤسسة أيت إسعد من هذا الوفاء.</span>
+          <span class="t" data-lang="tz">Maca azref ur d-yewwi ara tettungu. FAI tban-d seg tegnawt-agi.</span>
+        </p>
+      </div>
+      <div class="origine-img">
+        <div class="img-caption">Aït Issad, Kabylie · Algérie</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VISION -->
+<section class="vision reveal">
+  <div class="vision-bg"></div>
+  <div class="container">
+    <div class="section-label">
+      <span class="t active" data-lang="fr">02 · La Vision</span>
+      <span class="t" data-lang="ar" lang="ar">02 · الرؤية</span>
+      <span class="t" data-lang="tz">02 · Tazrigt</span>
+    </div>
+    <blockquote class="vision-statement">
+      <span class="t active" data-lang="fr">"Être le premier village d'Afrique à créer, depuis la diaspora, un espace de vie, de culture et de dignité pour les siens."</span>
+      <span class="t" data-lang="ar" lang="ar">"أن تكون أول قرية في أفريقيا تُنشئ، من الشتات، فضاءً للحياة والثقافة والكرامة لأبنائها."</span>
+      <span class="t" data-lang="tz">"Ad d-nili adɣar amezwaru n Tefriqt i ibeddan, seg tɣuri, taɣult n tudert i wid-is."</span>
+    </blockquote>
+    <p class="body-text" style="max-width:700px;font-size:1.15rem;">
+      <span class="t active" data-lang="fr">La FAI n'est pas une association comme les autres. C'est un projet de civilisation, ancré à Paris, tourné vers Aït Issad. Un lieu qui incarne une promesse : ne laisser personne derrière.</span>
+      <span class="t" data-lang="ar" lang="ar">المؤسسة ليست جمعية عادية. إنها مشروع حضاري، متجذر في باريس، متطلع نحو أيت إسعد.</span>
+      <span class="t" data-lang="tz">FAI mačči d timetti am nniḍen. D amahil n tmedyazt, deg Paris, yeẓra Ayt Issad.</span>
+    </p>
+  </div>
+</section>
+
+<!-- PILIERS -->
+<section class="piliers reveal">
+  <div class="container">
+    <div class="section-label">
+      <span class="t active" data-lang="fr">03 · Ce que nous bâtissons</span>
+      <span class="t" data-lang="ar" lang="ar">03 · ما نبنيه</span>
+      <span class="t" data-lang="tz">03 · Ayen i nebnu</span>
+    </div>
+    <h2>
+      <span class="t active" data-lang="fr">Quatre piliers.<br>Une <em>communauté entière.</em></span>
+      <span class="t" data-lang="ar" lang="ar">أربع ركائز.<br>مجتمع <em>متكامل.</em></span>
+      <span class="t" data-lang="tz">Kuẓ n izegrar.<br>Tamurt <em>yiwet.</em></span>
+    </h2>
+    <div class="piliers-grid">
+      <div class="pilier-card">
+        <div class="pilier-num">01</div>
+        <span class="pilier-icon">ⵜ</span>
+        <div class="pilier-title">
+          <span class="t active" data-lang="fr"><em>Culture</em> &amp; Identité</span>
+          <span class="t" data-lang="ar" lang="ar"><em>الثقافة</em> والهوية</span>
+          <span class="t" data-lang="tz"><em>Tẓuri</em> d Tmagit</span>
+        </div>
+        <ul class="pilier-list">
+          <li><span class="t active" data-lang="fr">Cours de langue berbère &amp; arabe</span><span class="t" data-lang="ar" lang="ar">دروس اللغة الأمازيغية والعربية</span><span class="t" data-lang="tz">Tirra n teqbaylit d taɛrabt</span></li>
+          <li><span class="t active" data-lang="fr">Cours de chant &amp; musique</span><span class="t" data-lang="ar" lang="ar">دروس الغناء والموسيقى</span><span class="t" data-lang="tz">Taẓuri n unɣi d usentel</span></li>
+          <li><span class="t active" data-lang="fr">Cours d'arts &amp; cuisine</span><span class="t" data-lang="ar" lang="ar">دروس الفنون والطبخ</span><span class="t" data-lang="tz">Tẓuri d taɣurst</span></li>
+          <li><span class="t active" data-lang="fr">Salon café communautaire</span><span class="t" data-lang="ar" lang="ar">صالون مقهى مجتمعي</span><span class="t" data-lang="tz">Salon n qahwa</span></li>
+        </ul>
+      </div>
+      <div class="pilier-card">
+        <div class="pilier-num">02</div>
+        <span class="pilier-icon">ⵙ</span>
+        <div class="pilier-title">
+          <span class="t active" data-lang="fr"><em>Éducation</em> &amp; Jeunesse</span>
+          <span class="t" data-lang="ar" lang="ar"><em>التعليم</em> والشباب</span>
+          <span class="t" data-lang="tz"><em>Taɣuri</em> d Telmeẓẓi</span>
+        </div>
+        <ul class="pilier-list">
+          <li><span class="t active" data-lang="fr">Soutien scolaire</span><span class="t" data-lang="ar" lang="ar">دعم دراسي</span><span class="t" data-lang="tz">Tallalt n tɣuri</span></li>
+          <li><span class="t active" data-lang="fr">Cours de sport</span><span class="t" data-lang="ar" lang="ar">دروس رياضية</span><span class="t" data-lang="tz">Tiddukla n usewɛel</span></li>
+          <li><span class="t active" data-lang="fr">Partenariats sportifs &amp; culturels</span><span class="t" data-lang="ar" lang="ar">شراكات رياضية وثقافية</span><span class="t" data-lang="tz">Imugga n tẓuri</span></li>
+          <li><span class="t active" data-lang="fr">Événements communautaires</span><span class="t" data-lang="ar" lang="ar">فعاليات مجتمعية</span><span class="t" data-lang="tz">Tigawin n tɣimit</span></li>
+        </ul>
+      </div>
+      <div class="pilier-card">
+        <div class="pilier-num">03</div>
+        <span class="pilier-icon">ⵣ</span>
+        <div class="pilier-title">
+          <span class="t active" data-lang="fr"><em>Social</em> &amp; Urgence</span>
+          <span class="t" data-lang="ar" lang="ar"><em>الاجتماعي</em> والطوارئ</span>
+          <span class="t" data-lang="tz"><em>Aɣerbaz</em> d Tɣawsa</span>
+        </div>
+        <ul class="pilier-list">
+          <li><span class="t active" data-lang="fr">Chambres d'hébergement d'urgence</span><span class="t" data-lang="ar" lang="ar">غرف إيواء طارئة</span><span class="t" data-lang="tz">Ixxamen n tallalt</span></li>
+          <li><span class="t active" data-lang="fr">Boîtes aux lettres &amp; domiciliation</span><span class="t" data-lang="ar" lang="ar">صناديق بريد وعناوين</span><span class="t" data-lang="tz">Taɣult n tɣawsa</span></li>
+          <li><span class="t active" data-lang="fr">Blanchisserie &amp; douches</span><span class="t" data-lang="ar" lang="ar">مغسلة ودشات</span><span class="t" data-lang="tz">Aɣanib d isnansayen</span></li>
+          <li><span class="t active" data-lang="fr">Cuisine collective</span><span class="t" data-lang="ar" lang="ar">مطبخ جماعي</span><span class="t" data-lang="tz">Taɣurst tagdudant</span></li>
+        </ul>
+      </div>
+      <div class="pilier-card">
+        <div class="pilier-num">04</div>
+        <span class="pilier-icon">ⴰ</span>
+        <div class="pilier-title">
+          <span class="t active" data-lang="fr"><em>Économie</em> &amp; Village</span>
+          <span class="t" data-lang="ar" lang="ar"><em>الاقتصاد</em> والقرية</span>
+          <span class="t" data-lang="tz"><em>Taseddast</em> d Adɣar</span>
+        </div>
+        <ul class="pilier-list">
+          <li><span class="t active" data-lang="fr">Incubateur pour créateurs</span><span class="t" data-lang="ar" lang="ar">حاضنة للمبادرين</span><span class="t" data-lang="tz">Tallalt i iberdan</span></li>
+          <li><span class="t active" data-lang="fr">Petites annonces &amp; emploi</span><span class="t" data-lang="ar" lang="ar">إعلانات وعروض عمل</span><span class="t" data-lang="tz">Izen n umahil</span></li>
+          <li><span class="t active" data-lang="fr">Salle de réunion &amp; bureau</span><span class="t" data-lang="ar" lang="ar">قاعة اجتماعات ومكتب</span><span class="t" data-lang="tz">Taddart n tmeslayt</span></li>
+          <li><span class="t active" data-lang="fr">Comités de village diaspora</span><span class="t" data-lang="ar" lang="ar">لجان القرية في المهجر</span><span class="t" data-lang="tz">Tiɣiwanin n adɣar</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHI STRIP -->
+<div class="archi-strip reveal">
+  <div class="archi-inner">
+    <img src="images/archi.png" alt="Concept architectural FAI">
+    <div class="archi-text">
+      <div class="section-label">
+        <span class="t active" data-lang="fr">Le projet architectural</span>
+        <span class="t" data-lang="ar" lang="ar">المشروع المعماري</span>
+        <span class="t" data-lang="tz">Amahil n tɣimi</span>
+      </div>
+      <p>
+        <span class="t active" data-lang="fr">Un espace pensé pour la communauté, conçu pour durer. Le futur lieu FAI réunira sous un même toit les quatre piliers de la fondation, dans un bâtiment qui reflète l'identité kabyle contemporaine.</span>
+        <span class="t" data-lang="ar" lang="ar">فضاء مصمم للمجتمع، مبني للدوام. سيجمع المكان المستقبلي لـ FAI الركائز الأربع تحت سقف واحد.</span>
+        <span class="t" data-lang="tz">Amkan i yebnan i tɣimit, yebna akken ad iɛeddi. Amkan amaynut n FAI ad yegmer kuẓ n izegrar deg yiwen n taddart.</span>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- IMPACT -->
+<section class="impact reveal" style="padding:0">
+  <div class="impact-text">
+    <div class="section-label">
+      <span class="t active" data-lang="fr">04 · L'Impact</span>
+      <span class="t" data-lang="ar" lang="ar">04 · الأثر</span>
+      <span class="t" data-lang="tz">04 · Tirmit</span>
+    </div>
+    <h2>
+      <span class="t active" data-lang="fr">Ce que change<br>un seul <em>endroit.</em></span>
+      <span class="t" data-lang="ar" lang="ar">ما يغيّره<br><em>مكان واحد.</em></span>
+      <span class="t" data-lang="tz">Ayen i yemmutten<br>axxam <em>yiwen.</em></span>
+    </h2>
+    <p class="body-text" style="max-width:460px;">
+      <span class="t active" data-lang="fr">La FAI ne propose pas des services. Elle crée un foyer. Un endroit où se retrouver, se former, se soutenir.</span>
+      <span class="t" data-lang="ar" lang="ar">المؤسسة لا تقدم خدمات فحسب. إنها تخلق وطناً. مكاناً للقاء والتعلم والتضامن.</span>
+      <span class="t" data-lang="tz">FAI ur d-tawi ara kan tiddukla. Tebna axxam. Amkan n tegmatt d tɣuri.</span>
+    </p>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num">1</div>
+        <div class="stat-label"><span class="t active" data-lang="fr">Village à l'origine du projet</span><span class="t" data-lang="ar" lang="ar">قرية في أصل المشروع</span><span class="t" data-lang="tz">Adɣar n umahil</span></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">∞</div>
+        <div class="stat-label"><span class="t active" data-lang="fr">Familles en diaspora</span><span class="t" data-lang="ar" lang="ar">أسر في المهجر</span><span class="t" data-lang="tz">Tifamilin s ufaris</span></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">0</div>
+        <div class="stat-label"><span class="t active" data-lang="fr">Politique. Zéro.</span><span class="t" data-lang="ar" lang="ar">سياسة. صفر.</span><span class="t" data-lang="tz">Tasertit. Ula yiwen.</span></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">3</div>
+        <div class="stat-label"><span class="t active" data-lang="fr">Langues. Une mémoire.</span><span class="t" data-lang="ar" lang="ar">لغات. ذاكرة واحدة.</span><span class="t" data-lang="tz">Tutlayin. Tamazzalt yiwet.</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="impact-visual">
+    <img src="images/enfants.png" alt="Enfants apprenant le tifinagh">
+  </div>
+</section>
+
+<!-- REJOINDRE -->
+<section class="rejoindre reveal">
+  <div class="rejoindre-bg"></div>
+  <div class="container">
+    <div class="section-label" style="justify-content:center">
+      <span class="t active" data-lang="fr">05 · Nous rejoindre</span>
+      <span class="t" data-lang="ar" lang="ar">05 · انضم إلينا</span>
+      <span class="t" data-lang="tz">05 · Kcem-aɣ</span>
+    </div>
+    <h2>
+      <span class="t active" data-lang="fr">Ce projet n'appartient<br>à personne.<br>Il appartient à <em>tous.</em></span>
+      <span class="t" data-lang="ar" lang="ar">هذا المشروع لا يخص أحداً.<br>بل <em>يخص الجميع.</em></span>
+      <span class="t" data-lang="tz">Amahil-agi mačči n yiwen.<br>D n <em>medden meṛṛa.</em></span>
+    </h2>
+    <p class="lead">
+      <span class="t active" data-lang="fr">Si vous êtes originaire d'Aït Issad, ou convaincu que la diaspora peut bâtir des ponts, cette fondation est pour vous. Contactez-nous directement pour rejoindre l'aventure.</span>
+      <span class="t" data-lang="ar" lang="ar">إن كنت من أصول أيت إسعد، أو مؤمناً بأن المهجر قادر على بناء جسور، هذه المؤسسة لك. تواصل معنا مباشرة للانضمام.</span>
+      <span class="t" data-lang="tz">Ma tella-k/m deg Ayt Issad, neɣ teẓriḍ d amatu, FAI d tak/tem. Muqel-aɣ akken ad tkecmeḍ.</span>
+    </p>
+    <div class="divider"></div>
+    <div class="cta-group">
+      <a href="https://api.whatsapp.com/send?phone=33628580390" class="cta-primary" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="flex-shrink:0">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        <span class="t active" data-lang="fr">Nous contacter</span>
+        <span class="t" data-lang="ar" lang="ar">تواصل معنا</span>
+        <span class="t" data-lang="tz">Muqel-aɣ</span>
+      </a>
+      <a href="#" class="cta-pdf-icon" title="Télécharger le projet (PDF)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      FAI — Fondation Aït Issad<br>
+      Association de loi 1901<br>
+      Paris, France
+    </div>
+    <div class="footer-meta">
+      Zéro politique · Zéro frontières<br>
+      Destiné aux originaires d'Aït Issad<br>
+      <a href="https://api.whatsapp.com/send?phone=33628580390" target="_blank" rel="noopener">+33 6 28 58 03 90</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+if (localStorage.getItem('fai-theme') === 'dark') {
+  document.getElementById('themeBtn').textContent = '◑ LIGHT';
+}
+
+window.addEventListener('load', function() {
+  setTimeout(function() {
+    document.getElementById('loader').classList.add('fade-out');
+  }, 1900);
+});
+
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('dark');
+  document.getElementById('themeBtn').textContent = isDark ? '◑ LIGHT' : '◑ DARK';
+  localStorage.setItem('fai-theme', isDark ? 'dark' : 'light');
+}
+
+function setLang(lang) {
+  document.querySelectorAll('.t').forEach(el => {
+    el.classList.toggle('active', el.dataset.lang === lang);
+  });
+  document.querySelectorAll('.nav-langs button').forEach(btn => btn.classList.remove('active'));
+  const idx = { fr: 0, ar: 1, tz: 2 }[lang];
+  document.querySelectorAll('.nav-langs button')[idx].classList.add('active');
+  document.documentElement.setAttribute('lang', lang === 'ar' ? 'ar' : lang === 'tz' ? 'ber' : 'fr');
+  document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
